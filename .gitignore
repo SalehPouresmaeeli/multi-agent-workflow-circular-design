@@ -1,0 +1,15 @@
+# Secrets — never commit (see .env.example and db_config.example.json)
+.env
+db_config.json
+
+# Private data — guideline database drafts, project documents, and generated graphs
+docs/
+output_data/
+
+# Personal notes
+TODO.txt
+
+# Python
+.venv/
+__pycache__/
+*.pyc
