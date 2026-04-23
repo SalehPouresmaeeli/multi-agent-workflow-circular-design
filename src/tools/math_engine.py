@@ -1,41 +1,61 @@
+# To find correct path of files
+import sys
+from pathlib import Path
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+####################################
+
 import json
 
-def calculate_winning_rule(durability_score, disassembly_score):
-    """Calculates the winning rule based on user slider scores."""
-    # 1. Open and read our dummy data
-    with open('conflicts.json', 'r') as file:
+def calculate_winning_rule(user_durability, user_disassembly):
+    """Calculates the winner using a weighted sum model."""
+    # 1. Load the new data structure
+    with open('src/tools/conflicts.json', 'r') as file:
         data = json.load(file)
     
     conflict = data["conflict_1"]
+    rule_a_data = conflict["scores"]["rule_A"]
+    rule_b_data = conflict["scores"]["rule_B"]
     
-    # 2. Start the scoreboard at 0
-    scores = {"rule_A": 0, "rule_B": 0}
+    # 2. The Advanced Math: (User Weight * Rule Score)
+    total_a = (user_durability * rule_a_data["durability"]) + (user_disassembly * rule_a_data["disassembly"])
+    total_b = (user_durability * rule_b_data["durability"]) + (user_disassembly * rule_b_data["disassembly"])
     
-    # 3. Add the user's scores to the matching attributes
-    scores[conflict["attributes"]["durability"]] += durability_score
-    scores[conflict["attributes"]["disassembly"]] += disassembly_score
-    
-    # 4. Find the highest score
-    if scores["rule_A"] > scores["rule_B"]:
+    # 3. Find the highest total
+    if total_a > total_b:
         winner = "rule_A"
-    elif scores["rule_B"] > scores["rule_A"]:
+        loser = "rule_B"
+        winner_points = total_a
+        loser_points = total_b
+    elif total_b > total_a:
         winner = "rule_B"
+        loser = "rule_A"
+        winner_points = total_b
+        loser_points = total_a
     else:
         winner = "rule_A" # Default to A in a tie
+        loser = "rule_B"
+        winner_points = total_a
+        loser_points = total_b
         
-    # 5. Return a clean dictionary with all the data we need for the next steps
+    # 4. Return the detailed results
     return {
-        "winning_rule": winner,
-        "winning_text": conflict[winner],
-        "final_scores": scores
+        #"winning_rule": winner,
+        "winning_text": conflict[f"{winner}_text"],
+        #"losing_rule": loser,
+        "losing_text": conflict[f"{loser}_text"],
+        "winner_points": winner_points,
+        "loser_points": loser_points,
     }
 
-# 6. Test the engine locally
+# 5. Test the engine
 if __name__ == "__main__":
-    print("Testing with Durability=5, Disassembly=2...")
-    result = calculate_winning_rule(durability_score=5, disassembly_score=2)
+    # Pretend the user cares equally about both (Durability=3, Disassembly=3)
+    print("Testing with User Durability=3, User Disassembly=3...")
+    result = calculate_winning_rule(user_durability=3, user_disassembly=3)
     
-    print(f"\nThe winner is: {result['winning_rule']}")
-    print(f"Rule text: '{result['winning_text']}'")
-    print(f"Scoreboard: {result['final_scores']}")
-    
+    print(f"\nThe winner is: {result['winning_text']}")
+    print(f"The loser is: {result['losing_text']}")
+    print(f"winner points: {result['winner_points']}")
+    print(f"loser points: {result['loser_points']}")

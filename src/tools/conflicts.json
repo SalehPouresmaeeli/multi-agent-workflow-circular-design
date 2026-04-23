@@ -1,10 +1,16 @@
 {
-  "conflict_1": {
-    "rule_A": "Use heavy-duty industrial glue to assemble the outer casing.",
-    "rule_B": "Use standard modular screws to assemble the outer casing.",
-    "attributes": {
-      "durability": "rule_A",
-      "disassembly": "rule_B"
+    "conflict_1": {
+        "rule_A_text": "Use heavy-duty industrial glue to assemble the outer casing.",
+        "rule_B_text": "Use standard modular screws to assemble the outer casing.",
+        "scores": {
+            "rule_A": {
+            "durability": 5,
+            "disassembly": 1
+            },
+            "rule_B": {
+            "durability": 2,
+            "disassembly": 5
+            }
+        }
     }
-  }
 }
