@@ -9,7 +9,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
 from crewai import Agent, Task, Crew, LLM
 from src.tools.pydantic_schemas import KnowledgeGraphSchema
 
-my_llm = LLM(model="gemini/gemini-3.1-flash-lite") 
+my_llm = LLM(model="gemini/gemini-3.1-flash-lite", temperature=0) 
 
 # the Canonicalisation Agent (The Data Engineer)
 canonicalisation_agent = Agent(
@@ -30,7 +30,7 @@ canonicalise_task = Task(
     {raw_extraction}
     
     Perform the following processing steps:
-    1. Entity Resolution: Identify and merge duplicate concepts or obvious synonyms. Resolve them into a single canonical entity using the clearest engineering term (e.g., merge 'industrial glue', 'heavy glue', and 'adhesives' into a single concept 'adhesive').
+    1. AGGRESSIVE ENTITY RESOLUTION (CRITICAL): You MUST identify and merge synonyms, sub-types, and overlapping concepts into a SINGLE canonical node. When you merge nodes, you MUST re-route all their edges to point to the new single node. Do not lose the relationships.
     2. ID Standardisation: Force all node 'id' fields to be lower snake_case (e.g., 'non_permanent_joint').
     3. Label Standardisation: Enforce strict Title Case for all node 'label' values (e.g., 'Component', 'Material').
     4. Structural Integrity: Every 'source' and 'target' in the edges list MUST exactly match an 'id' that exists in your nodes list. Do not leave hanging relationships.
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     - id: "Adhesives", label: "Component_Type"
     - id: "modular screws", label: "hardware_parts"
     - id: "heavy-duty industrial glue", label: "bonding_agent"
-    
+
     Edges:
     - "Industrial Glue" is technically an alternative to "Adhesives"
     - "modular screws" replaces "heavy-duty industrial glue"
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     )
     
     print("Executing Canonicalisation Agent test block...\n")
-    mock_messy_input = mock_messy_input2                                # choose test example
+    mock_messy_input = mock_messy_input1                                # choose test example
     result = crew.kickoff(inputs={"raw_extraction": mock_messy_input})
     
     # Extract the instantiated Pydantic object
