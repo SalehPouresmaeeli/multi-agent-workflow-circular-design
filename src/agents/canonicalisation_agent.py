@@ -1,10 +1,10 @@
 import sys
 from pathlib import Path
-
-# Fix for Windows console UnicodeEncodeError
+# Fix for Windows console UnicodeEncodeError (emojis and box-drawing chars)
 if sys.stdout.encoding != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8')
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+####################################
 
 from crewai import Agent, Task, Crew, LLM
 from src.tools.pydantic_schemas import KnowledgeGraphSchema
@@ -34,8 +34,9 @@ canonicalise_task = Task(
     2. ID Standardisation: Force all node 'id' fields to be lower snake_case (e.g., 'non_permanent_joint').
     3. Label Standardisation: Enforce strict Title Case for all node 'label' values (e.g., 'Component', 'Material').
     4. Structural Integrity: Every 'source' and 'target' in the edges list MUST exactly match an 'id' that exists in your nodes list. Do not leave hanging relationships.
+    5. Traceability Mapping: For every node, you MUST populate its 'synonyms' list field with the original raw text strings that were collapsed into it.
     """,
-    expected_output="A thoroughly resolved, schema-compliant knowledge graph structure containing clean nodes and edges.",
+    expected_output="A thoroughly resolved, schema-compliant knowledge graph structure containing clean nodes with embedded lineage.",
     agent=canonicalisation_agent,
     output_pydantic=KnowledgeGraphSchema  # CrewAI forces validation against written contract
 )
@@ -77,6 +78,15 @@ if __name__ == "__main__":
     - "main circuit board" must survive "outdoor rain exposure"
     """
 
+    ## Third example: Test example without separating nodes and edges and without labels
+    mock_messy_input3 = """
+    - "Rubber Seals" prevents "moisture ingress"
+    - "silicone gasket" is required for "IP-67"
+    - "ip 67 waterproof rating" protects "electrical PCB"
+    - "O-ring seal" seals against "High Humidity"
+    - "main circuit board" must survive "outdoor rain exposure"
+    """
+
     # Assemble the pipeline segment
     crew = Crew(
         agents=[canonicalisation_agent],
@@ -85,7 +95,7 @@ if __name__ == "__main__":
     )
     
     print("Executing Canonicalisation Agent test block...\n")
-    mock_messy_input = mock_messy_input1                                # choose test example
+    mock_messy_input = mock_messy_input3                                # choose test example
     result = crew.kickoff(inputs={"raw_extraction": mock_messy_input})
     
     # Extract the instantiated Pydantic object
@@ -98,6 +108,7 @@ if __name__ == "__main__":
     print("\nNodes:")
     for node in validated_graph.nodes:
         print(f"  • ID: [ {node.id} ] | Label: [ {node.label} ]")
+        print(f"    └── Merged from raw terms: {node.synonyms}")
         
     print("\nEdges (Relationships):")
     for edge in validated_graph.edges:

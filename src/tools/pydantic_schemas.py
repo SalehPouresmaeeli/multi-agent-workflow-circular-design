@@ -1,3 +1,11 @@
+# To find correct path of files
+import sys
+from pathlib import Path
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout.reconfigure(encoding='utf-8')
+sys.path.append(str(Path(__file__).resolve().parent.parent.parent))
+####################################
+
 from typing import Any
 from pydantic import BaseModel, Field
 
@@ -11,6 +19,10 @@ class GraphNode(BaseModel):
     label: str = Field(
         ..., 
         description="The category or type of the node (e.g., 'Component', 'Material'). Must be Title Case."
+    )
+    synonyms: list[str] = Field(
+        default_factory=list,
+        description="A list of the original messy raw strings from the text that were merged into this canonical node."
     )
     properties: dict[str, Any] = Field(
         default_factory=dict,
