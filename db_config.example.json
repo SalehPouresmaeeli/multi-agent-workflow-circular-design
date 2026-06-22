@@ -1,0 +1,6 @@
+{
+  "uri": "neo4j://localhost:7687",
+  "username": "neo4j",
+  "password": "your-password-here",
+  "database_name": "neo4j"
+}
