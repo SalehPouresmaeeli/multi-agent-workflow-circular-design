@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph Platform</title>
+    <style>
+        /* Modern, Minimalist CSS */
+        :root {
+            --primary: #2563eb;
+            --background: #ffffff;
+            --surface: #f8fafc;
+            --text: #0f172a;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Top Header Navigation */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            height: 50px;
+            /* Forces the logo to fit neatly in the header */
+            width: auto;
+            /* Maintains the aspect ratio */
+            margin-right: 15px;
+            border-radius: 4px;
+            /* Optional: adds slightly rounded corners */
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Left Side: Upload Panel */
+        .upload-section {
+            flex: 1;
+            padding: 2rem;
+            background-color: var(--surface);
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        /* Right Side: Chat & Agent Tracker */
+        .chat-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* The Agent Tracker Window */
+        .agent-tracker {
+            background-color: #1e293b;
+            color: #10b981;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            height: 150px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .agent-tracker p {
+            margin: 0 0 0.5rem 0;
+        }
+
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Chat Output Window */
+        .chat-box {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background-color: var(--surface);
+            line-height: 1.6;
+        }
+
+        /* Input Controls */
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .section-title {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #475569;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Knowledge Graph Agentic Tool</h1>
+    </header>
+
+    <div class="container">
+        <div class="upload-section">
+            <h2 class="section-title">Update Knowledge Graph</h2>
+            <p style="font-size: 0.9rem; color: #64748b;">Upload engineering documents to automatically extract nodes
+                and edges.</p>
+            <input type="file" id="documentUpload">
+            <input type="text" id="targetSheet" placeholder="Target Sheet Name (Optional, e.g., Sheet2)">
+            <button onclick="uploadDocument()">Ingest Document</button>
+        </div>
+
+        <div class="chat-section">
+            <h2 class="section-title">AI Agents Tracker</h2>
+            <div class="agent-tracker" id="tracker">
+                <p>> System Ready. Waiting for user input...<span class="blinking-cursor">_</span></p>
+            </div>
+
+            <h2 class="section-title">Knowledge Graph Query Tool</h2>
+            <div class="chat-box" id="chatOutput">
+                <em>Your answer will appear here...</em>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" id="userQuestion"
+                    placeholder="Ask the Graph a question (e.g., What components are waterproof?)"
+                    onkeypress="if(event.key === 'Enter') askQuestion()">
+                <button onclick="askQuestion()">Ask Agent</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- JAVASCRIPT LOGIC ---
+
+        function updateTracker(message) {
+            const tracker = document.getElementById('tracker');
+            tracker.innerHTML += `<p>> ${message}</p>`;
+            tracker.scrollTop = tracker.scrollHeight;
+        }
+
+        // Reads an SSE stream from a fetch Response and calls onEvent(data) for each parsed event.
+        async function consumeSSE(response, onEvent) {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                // SSE events are separated by double newline
+                const parts = buffer.split('\n\n');
+                buffer = parts.pop(); // keep any incomplete trailing fragment
+                for (const part of parts) {
+                    const dataLine = part.split('\n').find(l => l.startsWith('data: '));
+                    if (!dataLine) continue;
+                    try { onEvent(JSON.parse(dataLine.slice(6))); } catch (_) {}
+                }
+            }
+        }
+
+        async function uploadDocument() {
+            const fileInput = document.getElementById('documentUpload');
+            const sheetInput = document.getElementById('targetSheet').value.trim();
+            if (fileInput.files.length === 0) return alert("Please select a file first.");
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            if (sheetInput) formData.append("sheet_name", sheetInput);
+
+            document.getElementById('tracker').innerHTML = '';
+            updateTracker("Uploading document...");
+
+            try {
+                const response = await fetch('/api/upload', { method: 'POST', body: formData });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    updateTracker(`<span style="color: #ef4444;">Error: ${err.detail || 'Upload failed.'}</span>`);
+                    return;
+                }
+
+                await consumeSSE(response, (data) => {
+                    if (data.type === 'error') {
+                        updateTracker(`<span style="color: #ef4444;">Error: ${data.message}</span>`);
+                    } else if (data.type === 'done') {
+                        updateTracker(`<span style="color: #34d399;">${data.message}</span>`);
+                    } else if (data.type === 'task_done') {
+                        updateTracker(`<span style="color: #34d399;">${data.message}</span>`);
+                    } else if (data.message) {
+                        updateTracker(data.message);
+                    }
+                });
+
+            } catch (error) {
+                updateTracker(`<span style="color: #ef4444;">System Failure: ${error.message}</span>`);
+            }
+        }
+
+        async function askQuestion() {
+            const input = document.getElementById('userQuestion');
+            const chatBox = document.getElementById('chatOutput');
+            const question = input.value.trim();
+            if (!question) return;
+
+            input.value = '';
+            chatBox.innerHTML = `<strong>You:</strong> ${question}<br><br><em style="color: #64748b;">Agent is thinking...</em>`;
+            document.getElementById('tracker').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_question: question })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    updateTracker(`<span style="color: #ef4444;">Error: ${err.detail || 'Query failed.'}</span>`);
+                    return;
+                }
+
+                await consumeSSE(response, (data) => {
+                    if (data.type === 'result') {
+                        const formatted = data.answer.replace(/\n/g, '<br>');
+                        chatBox.innerHTML = `<strong>You:</strong> ${question}<br><br><strong>Agent:</strong><br>${formatted}`;
+                        updateTracker(`<span style="color: #34d399;">Task Complete.</span>`);
+                    } else if (data.type === 'error') {
+                        updateTracker(`<span style="color: #ef4444;">Error: ${data.message}</span>`);
+                        chatBox.innerHTML = `<span style="color: #ef4444;">An error occurred while contacting the agent.</span>`;
+                    } else if (data.type === 'task_done') {
+                        updateTracker(`<span style="color: #34d399;">${data.message}</span>`);
+                    } else if (data.message) {
+                        updateTracker(data.message);
+                    }
+                });
+
+            } catch (error) {
+                updateTracker(`<span style="color: #ef4444;">System Failure: ${error.message}</span>`);
+                chatBox.innerHTML = `<span style="color: #ef4444;">An error occurred while contacting the agent.</span>`;
+            }
+        }
+    </script>
+</body>
+
+</html>
