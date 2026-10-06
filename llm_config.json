@@ -1,9 +1,9 @@
 {
-  "default_model": "gemini/gemini-3.5-flash-lite",
+  "default_model": "openrouter/google/gemini-3.8-flash",
   "agents": {
-    "extraction_agent": "gemini/gemini-3.5-flash-lite",
-    "canonicalisation_agent": "gemini/gemini-3.5-flash-lite",
-    "rag_agent": "gemini/gemini-3.5-flash-lite",
-    "mentor_agent": "gemini/gemini-3.5-flash-lite"
+    "extraction_agent": "openrouter/google/gemini-3.8-flash",
+    "canonicalisation_agent": "openrouter/google/gemini-3.8-flash",
+    "rag_agent": "openrouter/google/gemini-3.8-flash",
+    "mentor_agent": "openrouter/google/gemini-3.8-flash"
   }
 }
