@@ -181,6 +181,16 @@ Useful helper scripts:
 └── db_config.example.json                  # template for Neo4j credentials
 ```
 
+## How to cite
+
+If you use this software in your work, please cite it. Use the
+**"Cite this repository"** button on the GitHub page, or see [`CITATION.cff`](CITATION.cff).
+
 ## License
 
 No license. All rights are reserved.
+
+## Contact
+
+- **Questions and bug reports:** please open an [issue](https://github.com/SalehPouresmaeeli/multi-agent-workflow-circular-design/issues).
+- **Collaboration and industry pilots:** connect with the developer on [LinkedIn](https://www.linkedin.com/in/saleh-pouresmaeeli/).
