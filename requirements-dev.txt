@@ -1,0 +1,6 @@
+# Tools for development and testing (not needed to run the app)
+# Install with: python -m pip install -r requirements-dev.txt
+-r requirements.txt
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx==0.28.1          # used by FastAPI's TestClient in tests/test_web_app_KG.py

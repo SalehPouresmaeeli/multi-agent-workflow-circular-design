@@ -1,0 +1,20 @@
+# Settings for the coverage report (pytest --cov)
+
+[run]
+# Measure only the project's own code
+source =
+    src
+    web
+# Small helper scripts that only call real APIs; not part of the app
+omit =
+    src/tools/check_models.py
+    src/tools/credit_check_requests.py
+
+[report]
+show_missing = True
+# Lines that are never meant to run under tests (added to coverage's defaults)
+exclude_also =
+    # manual test blocks at the bottom of files
+    if __name__ == .__main__.:
+    # Windows console fix, only runs when the console is not UTF-8
+    sys\.stdout\.reconfigure

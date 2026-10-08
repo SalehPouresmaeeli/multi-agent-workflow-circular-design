@@ -13,3 +13,9 @@ TODO.txt
 .venv/
 __pycache__/
 *.pyc
+
+# Test and coverage output
+.pytest_cache/
+pytest-cache-files-*/
+.coverage
+htmlcov/
