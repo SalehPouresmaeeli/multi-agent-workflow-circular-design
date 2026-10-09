@@ -1,6 +1,5 @@
-# Multi-Agent Workflow for Requirements Selection in Circular Design
-
-A multi-agent system that turns Circular Design guidelines into a knowledge graph, answers questions about it in plain language, and explains design trade-offs to engineers.
+# Multi-Agent Workflow for Requirements Selection
+A multi-agent system that turns design guidelines into a knowledge graph, answers questions about it in plain language, and explains design trade-offs to engineers.
 
 Built with [CrewAI](https://www.crewai.com/), [Neo4j](https://neo4j.com/) and LLMs accessed through [OpenRouter](https://openrouter.ai/) (Gemini by default).
 
@@ -192,5 +191,5 @@ No license. All rights are reserved.
 
 ## Contact
 
-- **Questions and bug reports:** please open an [issue](https://github.com/SalehPouresmaeeli/multi-agent-workflow-circular-design/issues).
+- **Questions and bug reports:** please open an [issue](https://github.com/SalehPouresmaeeli/multi-agent-workflow/issues).
 - **Collaboration and industry pilots:** connect with the developer on [LinkedIn](https://www.linkedin.com/in/saleh-pouresmaeeli/).
