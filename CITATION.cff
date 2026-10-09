@@ -1,21 +1,19 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
-title: "Multi-Agent Workflow for Circular Design"
+title: "Multi-Agent Workflow for Requirements Selection"
 abstract: >-
-  A multi-agent system that turns Circular Design guidelines into a
+  A multi-agent system that turns design guidelines into a
   knowledge graph, answers questions about it in plain language with
   the source of every fact, and explains design trade-offs to engineers.
 authors:
   - given-names: "Saleh"
     family-names: "Pouresmaeeli"
-repository-code: "https://github.com/SalehPouresmaeeli/multi-agent-workflow-circular-design"
+repository-code: "https://github.com/SalehPouresmaeeli/multi-agent-workflow-requirements-selection"
 version: "1.0.0"
 date-released: "2026-10-06"
 keywords:
-  - circular design
-  - circular economy
-  - remanufacturing
+  - requirements selection
   - multi-agent systems
   - knowledge graph
   - GraphRAG
