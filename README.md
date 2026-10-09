@@ -126,6 +126,13 @@ Each of these files has a small local test at the bottom:
 | `python .\src\tools\neo4j_query.py` | Reading from `KnowledgeGraphTEST` |
 | `python .\src\tools\math_engine.py` | The design-rule scoring engine |
 
+### Run the tests
+
+- **Unit tests** (free, no LLM or database needed, run automatically on GitHub):
+  `python -m pytest`
+- **Integration tests** (real Gemini model and Neo4j; needs `GEMINI_API_KEY` in `.env` and Neo4j running):
+  `python -m pytest -m integration -v`
+  They write only to a separate `integrationtest` database, never to your own graph.
 
 ## Choosing models
 
