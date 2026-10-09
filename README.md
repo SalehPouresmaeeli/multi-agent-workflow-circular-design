@@ -191,5 +191,5 @@ No license. All rights are reserved.
 
 ## Contact
 
-- **Questions and bug reports:** please open an [issue](https://github.com/SalehPouresmaeeli/multi-agent-workflow/issues).
+- **Questions and bug reports:** please open an [issue](https://github.com/SalehPouresmaeeli/multi-agent-workflow-requirements-selection/issues).
 - **Collaboration and industry pilots:** connect with the developer on [LinkedIn](https://www.linkedin.com/in/saleh-pouresmaeeli/).
