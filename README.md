@@ -1,7 +1,10 @@
 # Multi-Agent Workflow for Requirements Selection
+
+[![Tests](https://github.com/SalehPouresmaeeli/multi-agent-workflow-requirements-selection/actions/workflows/tests.yml/badge.svg)](https://github.com/SalehPouresmaeeli/multi-agent-workflow-requirements-selection/actions/workflows/tests.yml)
+
 A multi-agent system that turns design guidelines into a knowledge graph, answers questions about it in plain language, and explains design trade-offs to engineers.
 
-Built with [CrewAI](https://www.crewai.com/), [Neo4j](https://neo4j.com/) and LLMs accessed through [OpenRouter](https://openrouter.ai/) (Gemini by default).
+Built with [CrewAI](https://www.crewai.com/), [Neo4j](https://neo4j.com/) and LLMs accessed through [OpenRouter](https://openrouter.ai/).
 
 ## What it does
 
