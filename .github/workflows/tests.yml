@@ -1,0 +1,39 @@
+# Runs the test suite on GitHub's servers after every push or pull request to main,
+# and on demand from the Actions tab ("Run workflow").
+# No secrets are needed: tests/conftest.py gives every run a fake API key and a temporary
+# Neo4j config, and no test calls a real LLM or database.
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run tests with coverage
+        run: python -m pytest --cov
